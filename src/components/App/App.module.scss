@@ -1,0 +1,17 @@
+@import '../../global/variables.scss';
+
+.App {
+  padding: 2rem 5vw;
+  text-align: center;
+
+  .Title {
+    text-transform: uppercase;
+    letter-spacing: 0.5rem;
+    font-weight: 400;
+    padding-bottom: 2rem;
+
+    span {
+      color: $color2;
+    }
+  }
+}
