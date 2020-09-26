@@ -9,6 +9,8 @@ import zap1 from '../../assets/sounds/Zap-1.mp3';
 import bass1 from '../../assets/sounds/bass-1.mp3';
 import clap from '../../assets/sounds/clap.mp3';
 import hat from '../../assets/sounds/hat.mp3';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
 
 const boardItems = [
   {
@@ -62,7 +64,11 @@ let interval = null;
 
 const Board = () => {
   const [columns, setColumns] = useState(colArr);
+  const [activeCol, setActiveCol] = useState(null);
   const [play, setPlay] = useState(false);
+  const [loop, setLoop] = useState(false);
+
+  const loopClass = loop ? classes.Active : null;
 
   const tagClicked = useCallback((row, col) => {
     setColumns(prevCols => {
@@ -85,6 +91,8 @@ const Board = () => {
     audio.play();
   }, []);
 
+  const resetBoard = useCallback(() => setColumns(colArr));
+
   useEffect(() => {
     if (interval) clearInterval(interval);
 
@@ -95,14 +103,18 @@ const Board = () => {
           playSound(boardItems[row].sound);
         });
         track++;
-        if (track >= maxCol) {
+
+        if (track >= maxCol && loop) {
+          track = 0;
+        }
+        else if (track >= maxCol) {
           clearInterval(interval);
           interval = null;
           setPlay(false);
         } 
       }, playTime);
     }
-  }, [play, playSound, columns]);
+  }, [play, playSound, columns, loop]);
 
   return (
     <div className={classes.Board}>
@@ -117,24 +129,44 @@ const Board = () => {
             <div key={i} className={classes.BoardRow}>
               <div className={classes.RowTag} style={style} onClick={e => playSound(item.sound, e)}>{item.name}</div>
 
-              {columns.map((arr, j) => {
-                let colStyle = {
-                  backgroundColor: '#333',
-                  boxShadow: 'inset 0px 0px 2px rgba(0, 0, 0, 0.8)'
-                }
-                if (arr.includes(i)) {
-                  colStyle = style;
-                }
-                return <div key={i+'-'+j} 
-                  className={classes.ColTag} 
-                  style={colStyle}
-                  onClick={()=> tagClicked(i, j)}
-                ></div>;
-              })}
+              <div className={classes.Columns}>
+                {columns.map((arr, j) => {
+                  const colClasses = [classes.ColTag]
+                  if (j === activeCol) colClasses.push(classes.Active);
+                  let colStyle = {
+                    backgroundColor: '#333',
+                    boxShadow: 'inset 0px 0px 2px rgba(0, 0, 0, 0.8)'
+                  }
+                  if (arr.includes(i)) {
+                    colStyle = style;
+                  }
+                  return <div key={i+'-'+j} 
+                    className={colClasses.join(' ')} 
+                    style={colStyle}
+                    onClick={()=> tagClicked(i, j)}
+                  >
+                    { j === activeCol &&
+                      <div className={classes.TagGlow}
+                        style={{
+                          backgroundColor: item.color,
+                          boxShadow: '0 0 10px ' + item.color
+                        }}
+                      ></div>
+                    }
+                  </div>;
+                })}
+              </div>
             </div>
           );
         })}
+      </div>
 
+      <div className={classes.Playback}>
+        <button className={[classes.Btn, classes.Reset].join(' ')} onClick={resetBoard}>reset</button>
+        <button className={[classes.Btn, classes.Play].join(' ')} onClick={()=> setPlay(p => !p)}>
+          <FontAwesomeIcon icon={!play ? faPlay : faStop} color="inherit" fontSize="inherit" />
+        </button>
+        <button className={[classes.Btn, classes.Loop, loopClass].join(' ')} onClick={()=> setLoop(l => !l)}>loop</button>
       </div>
     </div>
   );

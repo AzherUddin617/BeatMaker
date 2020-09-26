@@ -7,9 +7,10 @@
   background-color: darken($colorBlack, 10%);
   border-radius: 0.2rem;
   box-shadow: 1px 1px 15px -5px rgba(0, 0, 0, 0.2);
+  padding: 1rem;
 
   .Contents {
-    padding: 1rem;
+    overflow: auto;
 
     $margin: 0.4rem;
     $radius: 0.1rem;
@@ -37,17 +38,56 @@
         -ms-user-select: none;
         user-select: none;
       }
-      .ColTag {
+      .Columns {
         flex: 1;
-        border-radius: $radius;
-        // width: 3rem;
-        // height: 100%;
-        // margin: 0 0.2rem;
-        margin-right: $margin;
-        &:last-child {
-          margin-right: 0;
+        min-width: 8rem;
+        display: flex;
+        // overflow: auto;
+
+        .ColTag {
+          flex: 1;
+          min-width: 1rem;
+          border-radius: $radius;
+          // width: 3rem;
+          // height: 100%;
+          // margin: 0 0.2rem;
+          margin-right: $margin;
+          &:last-child {
+            margin-right: 0;
+          }
+          cursor: pointer;
         }
-        cursor: pointer;
+      }
+    }
+  }
+
+  .Playback {
+    padding: 0 1rem;
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .Btn {
+      border: none;
+      outline: none;
+      background: none;
+      color: $colorWhite;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      opacity: 0.8;
+      cursor: pointer;
+      transition: color 0.4s ease;
+
+      -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+      &:hover, &.Active {
+        color: $color2;
       }
     }
   }
