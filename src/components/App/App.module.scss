@@ -1,8 +1,13 @@
 @import '../../global/variables.scss';
 
 .App {
+  height: 100vh;
   padding: 2rem 5vw;
   text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 
   .Title {
     text-transform: uppercase;

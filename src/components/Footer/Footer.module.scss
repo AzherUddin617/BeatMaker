@@ -1,0 +1,23 @@
+@import '../../global/variables.scss';
+
+.Footer {
+  text-align: right;
+  padding: 1rem 0;
+
+  .Text {
+    color: rgba($colorWhite, 0.5);
+    font-weight: 500;
+    font-size: 0.9rem;
+
+    .Link {
+      text-decoration: none;
+      color: $color2;
+      opacity: 0.5;
+      transition: opacity 0.4s ease;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
