@@ -61,6 +61,7 @@ const colArr = [];
 for (let i=0; i<maxCol; i++) colArr.push([]);
 
 let interval = null;
+let track = 0;
 
 const Board = () => {
   const [columns, setColumns] = useState(colArr);
@@ -91,30 +92,43 @@ const Board = () => {
     audio.play();
   }, []);
 
-  const resetBoard = useCallback(() => setColumns(colArr));
+  const playTrack = useCallback(track => {
+    columns[track].forEach(row => {
+      playSound(boardItems[row].sound);
+    });
+  }, [columns, playSound]);
+
+  const resetBoard = () => setColumns(colArr);
 
   useEffect(() => {
-    if (interval) clearInterval(interval);
-
-    if (play) {
-      let track = 0;
-      interval = setInterval(() => {
-        columns[track].forEach(row => {
-          playSound(boardItems[row].sound);
-        });
+    if (!play) {
+      track = 0;
+      setActiveCol(null);
+    } 
+    else if (play) {
+      const intervalFunction = () => {
+        playTrack(track);
+        setActiveCol(track);
         track++;
-
+  
         if (track >= maxCol && loop) {
           track = 0;
         }
         else if (track >= maxCol) {
           clearInterval(interval);
           interval = null;
+          track = 0;
           setPlay(false);
         } 
-      }, playTime);
+      }
+      if (track === 0) intervalFunction();
+      interval = setInterval(intervalFunction, playTime);
     }
-  }, [play, playSound, columns, loop]);
+
+    return ()=> {
+      if (interval) clearInterval(interval);
+    }
+  }, [play, playSound, columns, loop, playTrack]);
 
   return (
     <div className={classes.Board}>
@@ -132,7 +146,7 @@ const Board = () => {
               <div className={classes.Columns}>
                 {columns.map((arr, j) => {
                   const colClasses = [classes.ColTag]
-                  if (j === activeCol) colClasses.push(classes.Active);
+                  if (j === activeCol && arr.includes(i)) colClasses.push(classes.Active);
                   let colStyle = {
                     backgroundColor: '#333',
                     boxShadow: 'inset 0px 0px 2px rgba(0, 0, 0, 0.8)'
@@ -145,7 +159,7 @@ const Board = () => {
                     style={colStyle}
                     onClick={()=> tagClicked(i, j)}
                   >
-                    { j === activeCol &&
+                    { j === activeCol && arr.includes(i) &&
                       <div className={classes.TagGlow}
                         style={{
                           backgroundColor: item.color,
